@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix Remix Remix ASCEND",
+  "description": "Train for the role you want. Personalized career roadmaps, daily classes, verified resources, mock tests, and stage-gated job readiness.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
