@@ -1690,15 +1690,15 @@ app.get('/api/video-resources', async (req: Request, res: Response) => {
     });
 
     return res.json({
-      available: true,
-      message: 'Technical videos discovered successfully.',
+      available: resources.length > 0,
+      message: resources.length > 0 ? 'Technical videos discovered successfully.' : 'YouTube video service is unavailable or unconfigured.',
       resources,
     });
   } catch (error: any) {
-    console.error('[YouTube Service Error]:', error.message);
+    console.warn('[YouTube Service Notice]:', error?.message || 'Video search skipped');
     return res.json({
       available: false,
-      message: 'YouTube Data API discovery failed.',
+      message: 'YouTube video service is currently unavailable.',
       resources: [],
     });
   }

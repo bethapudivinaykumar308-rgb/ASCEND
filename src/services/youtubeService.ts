@@ -11,9 +11,29 @@ export class YouTubeService {
     this.apiKey = ''; // Initialized lazily
   }
 
+  private isValidKey(key: string): boolean {
+    if (!key) return false;
+    const trimmed = key.trim();
+    if (
+      !trimmed ||
+      trimmed.startsWith('PASTE_') ||
+      trimmed.startsWith('MY_') ||
+      trimmed.startsWith('YOUR_') ||
+      trimmed.includes('KEY_HERE') ||
+      trimmed.includes('PLACEHOLDER') ||
+      trimmed.length < 15
+    ) {
+      return false;
+    }
+    return true;
+  }
+
   private getApiKey(): string {
-    if (!this.apiKey) {
-      this.apiKey = process.env.YOUTUBE_API_KEY || '';
+    const rawKey = process.env.YOUTUBE_API_KEY || '';
+    if (this.isValidKey(rawKey)) {
+      this.apiKey = rawKey.trim();
+    } else {
+      this.apiKey = '';
     }
     return this.apiKey;
   }
@@ -26,7 +46,7 @@ export class YouTubeService {
   }
 
   public isConfigured(): boolean {
-    return !!this.getApiKey();
+    return this.isValidKey(this.getApiKey());
   }
 
   /**
@@ -39,7 +59,7 @@ export class YouTubeService {
   }) {
     const apiKey = this.getApiKey();
     if (!apiKey) {
-      throw new Error('YouTube API key not configured');
+      return [];
     }
 
     const searchQuery = `${query.career} ${query.topic} technical explanation tutorial`.trim();
@@ -53,7 +73,8 @@ export class YouTubeService {
     const response = await fetch(url.toString());
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
-      throw new Error(`YouTube API failed: ${JSON.stringify(error)}`);
+      console.warn(`[YouTube API Warning]: Request failed with status ${response.status}:`, error?.error?.message || 'Invalid key or quota exceeded');
+      return [];
     }
 
     const data: any = await response.json();
